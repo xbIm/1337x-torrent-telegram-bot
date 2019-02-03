@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+    app:
+        build: .
+        command: npm run dev
+        ports:
+        - '3000:3000'
+        volumes:
+        - .:/code
+        - api-deps:/code/node_modules
+        environment:
+        - NTBA_FIX_319=1
+        - MONGO_URI=mongodb://mongo/admin
+        - TOKEN=<telegram-token>
+        depends_on:
+        - mongo
+        links:
+        - mongo
+    mongo:
+        image: 'mongo:3.6'
+        volumes:
+            - mongo-crawler-bot:/data/db
+        ports:
+            - '27017:27017'
+
+volumes:
+    mongo-crawler-bot:
+    api-deps:

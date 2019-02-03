@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "sourceMap": true,
+        "noImplicitAny": false,
+        "module": "commonjs",
+        "allowJs": false,
+        "target": "es6",
+        "lib": [
+            "es6",
+            "dom"
+        ],
+        "jsx": "react"
+    },
+    "include": [
+    ]
+}

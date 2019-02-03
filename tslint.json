@@ -1,0 +1,55 @@
+{
+    "extends": "tslint:recommended",
+    "linterOptions": {
+        "exclude": [
+            "node_modules/**"
+        ]
+    },
+    "rules": {
+        "max-classes-per-file": [
+            false
+        ],
+        "interface-name": [
+            true,
+            "never-prefix"
+        ],
+        "quotemark": [
+            true,
+            "single"
+        ],
+        "whitespace": [
+            true,
+            "check-branch",
+            "check-decl",
+            "check-operator",
+            "check-module",
+            "check-type",
+            "check-typecast",
+            "check-preblock"
+        ],
+        "semicolon": [
+            true,
+            "always",
+            "ignore-bound-class-methods",
+            "ignore-interfaces"
+        ],
+        "variable-name": [
+            true,
+            "ban-keywords",
+            "check-format",
+            "allow-leading-underscore",
+            "allow-pascal-case"
+        ],
+        "array-type": [
+            true,
+            "generic"
+        ],
+        "member-access": false,
+        "object-literal-sort-keys": false,
+        "no-shadowed-variable": false,
+        "max-line-length": [
+            true,
+            140
+        ]
+    }
+}

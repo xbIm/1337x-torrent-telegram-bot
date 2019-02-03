@@ -1,0 +1,34 @@
+FROM node:10-alpine as build
+
+WORKDIR /app/
+
+COPY package.json .
+COPY yarn.lock .
+
+RUN yarn install
+
+COPY . .
+
+RUN yarn lint && yarn run test
+
+FROM node:10-alpine
+
+LABEL name=com.xbimz.torrent.bot
+
+ENV NODE_ENV=production
+ENV NPM_CONFIG_LOGLEVEL=warn
+
+WORKDIR /app/
+
+COPY package.json .
+COPY yarn.lock .
+
+RUN yarn install
+
+COPY . .
+
+EXPOSE 3000
+
+CMD ["node", "start.js"]
+
+HEALTHCHECK CMD node_modules/.bin/ts-node ./configs/healthcheck

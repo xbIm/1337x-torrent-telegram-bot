@@ -15,7 +15,10 @@ export function setupExpress(logInfo: (message: string) => void,
     app.use(bodyParser.json());
 
     app.post(`/bot${config.bot.token}`, (req, res) => {
+        logInfo('request started');
+
         cBot.processUpdate(req.body);
+
         res.sendStatus(200);
     });
 

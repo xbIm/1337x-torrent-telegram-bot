@@ -13,6 +13,7 @@ const filterSplat = winston.format((info, opts) => {
     Object.assign(info, info['0']);
     info[SPLAT] = values(info['0']);
     delete info['0'];
+
     return info;
 });
 

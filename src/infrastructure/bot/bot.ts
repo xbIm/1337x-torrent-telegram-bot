@@ -1,6 +1,6 @@
 import * as TelegramBot from 'node-telegram-bot-api';
 import { KeyboardButton } from 'node-telegram-bot-api';
-import { logError } from '../logging';
+import { logError, logInfo } from '../logging';
 
 export function replyMessageWithKeyboardLong(reply: (message: TelegramBot.Message,
                                                      text: string,
@@ -73,7 +73,11 @@ export function replyError(
     error: Error,
     options?: TelegramBot.SendMessageOptions): Promise<any> {
     {
-        logError(error);
+        if (error.name === 'UserError') {
+            logInfo('UserError=' + error.message);
+        } else {
+            logError(error);
+        }
 
         return reply(message, 'Something went wrong', options);
     }

@@ -33,7 +33,10 @@ export default function getOtherPage(
 
 function validateMessageId(session: Session, messageId: number) {
     if (session.messageId > messageId) {
-        return Promise.reject(Error('session expired'));
+        const error = Error('session expired');
+        error.name = 'UserError';
+
+        return Promise.reject(error);
     }
     return Promise.resolve(session);
 }

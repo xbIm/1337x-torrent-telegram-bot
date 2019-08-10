@@ -11,7 +11,7 @@ COPY . .
 
 RUN yarn lint && yarn run test
 
-FROM node:10-alpine
+FROM node:12-alpine
 
 LABEL name=com.xbimz.torrent.bot
 
@@ -31,4 +31,4 @@ EXPOSE 3000
 
 CMD ["node", "start.js"]
 
-HEALTHCHECK CMD node_modules/.bin/ts-node ./configs/healthcheck
+HEALTHCHECK CMD node_modules/.bin/ts-node ./src/configuration/healthcheck

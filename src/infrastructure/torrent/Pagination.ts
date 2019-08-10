@@ -7,14 +7,17 @@ export function onPrevNext(
     logError: (error: Error) => void,
     getOtherPage: (data: PaginationRequest, userId: number, messageId: number) => Promise<SearchResult>,
     editMessageText: (text: string, options?: TelegramBot.EditMessageTextOptions) => Promise<TelegramBot.Message | boolean | Error>,
-    message: any): Promise<void> {
+    bbot: TelegramBot,
+    message: any,
+    data: string): Promise<void> {
 
     return Promise.resolve()
         .then(() => {
-            logInfo(`onPrevNext has called with chatId:${message.from.id} and name:${message.from.username} and data=${message.data}`);
 
-            const data = PaginationRequest.fromData(message.data);
-            return getOtherPage(data, message.from.id, message.message.message_id)
+            logInfo(`onPrevNext has called with chatId:${message.from.id} and name:${message.from.username} and data=${message.text}`);
+
+            const dataParsed = PaginationRequest.fromData(data);
+            return getOtherPage(dataParsed, message.chat.id, message.message_id)
                 .then((searchResult) => {
 
                     const prevNext = [];
@@ -32,8 +35,8 @@ export function onPrevNext(
                     }
 
                     const editOptions = {
-                        chat_id: message.from.id,
-                        message_id: message.message.message_id,
+                        chat_id: message.chat.id,
+                        message_id: message.message_id,
                         reply_markup: {
                             inline_keyboard: prevNext,
                         },
@@ -46,10 +49,15 @@ export function onPrevNext(
                     return Promise.resolve(true);
                 })
                 .catch((error: Error) => {
-                    logError(error);
+                    if (error.name === 'UserError') {
+                        logInfo('UserError=' + error.message);
+                    } else {
+                        logError(error);
+                    }
+
                     editMessageText('error', {
-                        chat_id: message.from.id,
-                        message_id: message.message.message_id,
+                        chat_id: message.chat.id,
+                        message_id: message.message_id,
                     });
                     return Promise.resolve(null);
                 });

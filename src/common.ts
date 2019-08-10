@@ -13,7 +13,6 @@ export function partial(fn, ...restOfName: Array<any>) {
 
 export function createPromise<T>(func: (arg?: any, callback?: ((error: Error, data: T) => void)) => void, arg?: any): Promise<T> {
     return new Promise((resolve, reject) => {
-
         function callback(err, data): void {
             if (err) {
                 reject(err);

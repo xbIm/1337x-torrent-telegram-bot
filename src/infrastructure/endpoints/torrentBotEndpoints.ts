@@ -1,15 +1,30 @@
 import * as TelegramBot from 'node-telegram-bot-api';
+import { getId } from '../bot/bot';
 import { BotEndpoint } from '../bot/BotEndpoint';
+import { logInfo, startProfiler } from '../logging';
+import { setTrace } from '../scopeMiddleware';
 import { onGet, onSearchTorrent } from '../torrent/Search';
 import { onSet, onShow, onShowCategory, onShowOrderBy } from '../torrent/SearchArgs';
 
 export default function torrentBotApi(bot: TelegramBot,
-                                      wrapTrace: (func: ((match: RegExpExecArray | null) => Promise<any>))
-                                          => ((msg: TelegramBot.Message, match: RegExpExecArray | null) => void),
-                                      onPrevNext: (bot: TelegramBot, message: any) => any) {
+                                      onPrevNext: (bot: TelegramBot, message: any, data: string) => any) {
 
-    bot.once('callback_query', (query: TelegramBot.CallbackQuery) => {
-        onPrevNext(bot, query.message);
+    bot.on('callback_query', (query: TelegramBot.CallbackQuery) => {
+        let profiler = null;
+
+        Promise.resolve().then(() => {
+            return new Promise((resolve) => {
+                setTrace(() => {
+                    logInfo(`%s has called with chatId:%d and name:${query.message.from.username} and text:${(query.message).text}`,
+                        {funcName: 'onPrevNext', chatId: getId(query.message)});
+                    profiler = startProfiler();
+                    resolve(onPrevNext(bot, query.message, query.data));
+                });
+            });
+        })
+            .then(() => {
+                profiler.done({message: 'answered'});
+            });
     });
 }
 

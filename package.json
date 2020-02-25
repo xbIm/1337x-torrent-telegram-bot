@@ -14,7 +14,7 @@
         "cheerio": "^1.0.0-rc.2",
         "cls-hooked": "^4.2.2",
         "express": "^4.16.3",
-        "mongoose": "^5.1.4",
+        "mongoose": "^5.7.5",
         "node-telegram-bot-api": "^0.30.0",
         "promise-retry": "^1.1.1",
         "request": "^2.87.0",

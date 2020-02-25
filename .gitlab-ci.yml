@@ -1,0 +1,55 @@
+image: docker:18.09.4
+
+stages:
+  - build
+  - build-stable
+  - deploy
+
+variables:
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""
+
+services:
+  - docker:dind
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+  - workdir/
+
+
+before_script:
+  - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+
+build-stable:
+  stage: build
+  script:
+    - sh build-stable.sh   
+  only:
+    - master
+    
+deploy:
+  stage: deploy
+  script:
+     #prepare 
+    - apk add --no-cache gettext
+    - export APP_IMAGE=$(cat workdir/APP_IMAGE)
+    - echo APP_IMAGE=$APP_IMAGE
+    - alias dockerx="docker --tls -H=xbimz.world:2376 --tlscert=client.crt.pem --tlskey=client.key.pem"
+    #apply vars to compose
+    - cd deploy
+    - envsubst < docker-compose.prod.yml > docker-compose.yml
+#    - cat docker-compose.yml
+    - dockerx stack deploy -c docker-compose.yml --with-registry-auth --prune bot
+  only:
+    - master
+    
+    
+build:
+  stage: build
+  script:
+    #- git tag --annotate $newtag --message "[skip ci]"
+    - docker build --pull -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" -f Dockerfile.Release .
+    #- docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
+  except:
+    - master

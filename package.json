@@ -12,7 +12,7 @@
         "body-parser": "^1.18.3",
         "bottlejs": "^1.7.1",
         "cheerio": "^1.0.0-rc.2",
-        "continuation-local-storage": "^3.2.1",
+        "cls-hooked": "^4.2.2",
         "express": "^4.16.3",
         "mongoose": "^5.1.4",
         "node-telegram-bot-api": "^0.30.0",
@@ -23,15 +23,21 @@
         "winston": "3.1.0"
     },
     "scripts": {
+        "build": "tsc -p src/js && fable-splitter src -o build --commonjs",
         "dev": "node_modules/.bin/nodemon -e ts -w . start.js",
         "lint": "tslint -c tslint.json '**/*.ts'",
         "test": "ava-ts ./test/tests/**/*.ts"
     },
     "devDependencies": {
+        "@babel/core": "^7.5.5",
         "ava": "^0.25.0",
         "ava-ts": "^0.25.1",
+        "fable-compiler": "^2.3.19",
+        "fable-loader": "^2.1.8",
+        "fable-splitter": "^2.1.10",
         "js-mock": "^1.0.2",
         "localtunnel": "^1.9.0",
+        "ngrok": "^3.2.7",
         "nodemon": "^1.17.5",
         "tslint": "^5.12.1"
     }

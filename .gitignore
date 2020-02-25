@@ -1,3 +1,8 @@
 node_modules
 *.log
 .idea/
+build/
+.ionide/
+src/js/*.js
+src/obj/
+

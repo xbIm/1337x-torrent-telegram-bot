@@ -1,5 +1,4 @@
 import {Document, Model, model, Schema} from 'mongoose';
-import {SearchArgs} from "./Entities";
 
 interface UserInput {
     text: string;

@@ -1,5 +1,6 @@
 module App.SearchOnSite
 
+open System
 open System.Text.RegularExpressions
 open Common
 open Fable.Core
@@ -11,10 +12,7 @@ open App.Domain.UserOptions
 open Domain.Session
 open App.Parse
 open Domain.MagneticLink
-
-let domain = "https://1337x.am/"
-
-let inline (=>>) fn a = bindResult fn a
+open Fable.Import
 
 type MakeUrl = Option<SearchArgs> -> UserRequest -> Result<Url, BotError>
 
@@ -27,13 +25,13 @@ let makeUrlImpl: MakeUrl =
         | Some(searchArgs) ->
             match (toUrlCategory searchArgs.category, toUrlOrderBy searchArgs.orderby) with
             | (Some category, Some orderby) ->
-                sprintf "%ssort-category-search/%s/%s/%s/desc/1/" domain text category orderby
-            | (Some category, None) -> sprintf "%scategory-search/%s/%s/1/" domain text category
-            | (None, Some orderby) -> sprintf "%ssort-search/%s/%s/desc/1/" domain text orderby
-            | (None, None) -> sprintf "%ssearch/%s/1/" domain text
+                sprintf "sort-category-search/%s/%s/%s/desc/1/" text category orderby
+            | (Some category, None) -> sprintf "category-search/%s/%s/1/" text category
+            | (None, Some orderby) -> sprintf "sort-search/%s/%s/desc/1/" text orderby
+            | (None, None) -> sprintf "search/%s/1/" text
         | None ->
-            sprintf "%ssearch/%s/1/" domain text
-        |> Url
+            sprintf "search/%s/1/" text
+        |> Url.create
         |> Result.Ok
 
 type AddRecord = ChatId -> string -> JS.Promise<History>
@@ -74,50 +72,68 @@ let toBotResponse (session: Session): BotResponse =
         { response = MessageWithInlineKeyBoard(text, prevNext) }
     | _ -> { response = String "No results were returned. Please refine your search." }
 
-let validateBotRequest (botRequest: BotRequest) =
-    let text = unwrapUserRequest botRequest.userRequest
+let validateUserRequest (userReq) =
+    let text = unwrapUserRequest userReq
     match text.Length with
     | l when l > 100 -> Error <| ValidationError "Text should be less than 100 symbols"
     | _ ->
         match Regex("^[A-Za-z0-9_ ]*$").IsMatch(text) with
         | false -> Error <| ValidationError "Only latin sign is allowed"
-        | true -> Ok botRequest
+        | true -> Ok ()
 
+let validateBotRequest (botRequest: BotRequest) =
+    botRequest.userRequest
+    |> validateUserRequest
+    |> Result.map (fun () -> botRequest)
 
+let localParseTorrentTable = fun response -> parseTorrentTable response.html 0
 
 let SearchTorrentsImpl: SearchTorrents =
     fun logger getSearchArgs makeUrl request addRecord saveSession botRequest ->
         validateBotRequest botRequest
-        |> bindRPromise (fun r -> getSearchArgs r.chatId)
-        |> bindResult (fun searchArgs -> makeUrl searchArgs botRequest.userRequest)
-        |> tapPromiseResult (fun r -> logger.LogTrace <| sprintf "url:%s" (unwrapUrl r))
-        |> bindPromise (request |> logger.LogInfoDuration "server respond" None)
+        |> Promise.lift
+        |> PromiseResult.bindAsync (fun r -> getSearchArgs r.chatId)
+        |> PromiseResult.bindResult (fun searchArgs -> makeUrl searchArgs botRequest.userRequest)
+        |> PromiseResult.tap (fun r -> logger.LogTrace <| sprintf "url:%s" (unwrapUrl r))
+        |> PromiseResult.bindAsync (request |> logger.LogInfoDuration "server respond" None)
         //|> tapPromiseResult (fun r -> logger.LogTrace <| sprintf "html:%s" r.html)
-        |> bindResult (fun response -> parseTorrentTable response.html 0)
-        |> mapPromise (fun parseResult -> toSession parseResult botRequest.chatId botRequest.messageId)
-        |> bindPromise (fun s ->
-            saveSession s
+        |> PromiseResult.bindResult localParseTorrentTable
+        |> PromiseResult.map (fun parseResult -> toSession parseResult botRequest.chatId botRequest.messageId)
+        |> PromiseResult.bindAsync (fun s ->
+            match s.torrents.Count with
+            | l when l > 0 -> saveSession s
+            | _ -> Promise.lift s
             |> Promise.bind (fun _ -> addRecord botRequest.chatId (unwrapUserRequest botRequest.userRequest))
-            //todo: delete this map
             |> Promise.map (fun _ -> s))
-        |> mapPromise toBotResponse
+        |> PromiseResult.map toBotResponse
 
-let onGet: Logger-> string -> GetUserOptions -> GetSession -> (ChatId -> int -> JS.Promise<Result<MagneticLink, BotError>>) -> BotRequest -> JS.Promise<Result<BotResponse, BotError>> =
+let onGet: Logger -> string -> GetUserOptions -> GetSession -> (GetIdReq -> JS.Promise<Result<MagneticLink, BotError>>) -> BotRequest -> JS.Promise<Result<BotResponse, BotError>> =
     fun logger host getUserOptions getSession getMagneticLink botRequest ->
         let id = (unwrapUserRequest botRequest.userRequest)
+        logger.LogDebug (sprintf "id:%s" id)
         promise {
             let! session = (getSession |> logger.LogInfoDuration "mongo:getSession" None) botRequest.chatId
+            match (session) with
+            | None -> return Error NoSession
+            | Some session ->
             let! userOpts = (getUserOptions |> logger.LogInfoDuration "mongo:getUserOptions" None) botRequest.chatId
 
             match (isShowMagnetic userOpts) with
             | true ->
-                let! r = getMagneticLink (botRequest.chatId) (int id)
-                return Result.map (fun link -> { response = String(unwrapMagneticLink link) }) (r)
+                 match Int32.TryParse(id) with
+                    | (true, parsed) ->
+                        return! getMagneticLink { chatId = botRequest.chatId; getId = parsed }
+                        |> PromiseResult.map (fun link -> { response = String(unwrapMagneticLink link) })
+                    | (false, _) -> return ValidationError "Id is not a number" |> Error
             | false ->
                 let link =
                     (sprintf "<a href='%s/xtbot/get/%d/%s'>download</a>" host (unwrapChatId botRequest.chatId) id)
-                let torrent = session.torrents.Find(fun e -> e.id = (int id))
-                return Ok
-                           { response =
-                                 HtmlString(sprintf "%s \nlink: %s" torrent.title link) }
+
+                match (findTorrent (int id) session) with
+                | Some torrent ->
+                    return Ok
+                               { response =
+                                     HtmlString(sprintf "%s \nlink: %s" torrent.title link) }
+                | None ->
+                    return Error (ValidationError "Torrent not found in session")
         }

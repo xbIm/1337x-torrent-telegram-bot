@@ -1,5 +1,10 @@
 import { Document, Model, model, Schema } from 'mongoose';
-import { SearchArgs } from './Entities';
+
+export interface SearchArgs {
+    userId: number;
+    category?: string;
+    orderby?: string;
+}
 
 interface SearchArgsModel extends SearchArgs, Document {
 }

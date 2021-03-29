@@ -12,6 +12,7 @@ type SearchArgs =
 type GetSearchArgs = ChatId -> JS.Promise<Option<SearchArgs>>
 
 type Setter<'A> =
+    abstract Regex: string
     abstract Name: string
     abstract FriendlyName: string
     //todo: delete titles
@@ -21,7 +22,8 @@ type Setter<'A> =
 
 type SearchArgsSetter(f: ChatId -> string -> string -> JS.Promise<SearchArgs>) =
     interface Setter<SearchArgs> with
-        member this.Name = "    "
+        member this.Regex = "search[aA]rgs"
+        member this.Name = "searchArgs"
         member this.FriendlyName = "search options"
         member this.Titles = [| "category"; "orderby" |]
 

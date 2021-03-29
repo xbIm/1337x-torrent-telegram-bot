@@ -50,7 +50,7 @@ let handle (httpLogic: HttpLogic<'A>): RouterHandler =
             |> Promise.iter (fun response ->
                 match (response) with
                 | ClientError _ -> res.sendStatus 400
-                | Redirect adress -> res.redirect adress)
+                | Redirect address -> res.redirect address)
 
 let addHttpEndpoint<'A> (app: Application) (logger: Logger) (arg: string * string * HttpLogic<'A>): unit =
     match arg with

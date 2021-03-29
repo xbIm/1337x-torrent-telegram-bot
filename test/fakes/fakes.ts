@@ -4,6 +4,10 @@ export function fakeLog(message: string) {
     return 0;
 }
 
+export function fakeErrorLog(error: Error) {
+    return 0;
+}
+
 export function replyMessageWithKeyboard(message: string,
                                          array: Array<Array<KeyboardButton>>): Promise<any> {
 

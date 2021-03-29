@@ -1,7 +1,15 @@
 import {Document, Model, model, Schema} from 'mongoose';
-import { TorrentTableEntity} from './Entities';
 
-//import { startProfiler } from '../../../infrastructure/logging';
+export class TorrentTableEntity {
+    public id: number;
+    public url: string;
+    public title: string;
+    public size: string;
+    public seaders: number;
+    public leachers: number;
+    public time: string;
+    public author: string;
+}
 
 export interface Session {
     userId: number;

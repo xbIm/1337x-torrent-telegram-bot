@@ -1,6 +1,7 @@
 module Domain.MagneticLink
 
 open Common
+open Common
 open Domain.Bot
 open Domain.Request
 open Domain.Session
@@ -10,31 +11,47 @@ type MagneticLink = MagneticLink of string
 
 let unwrapMagneticLink (MagneticLink a) = a
 
+type GetIdReq =
+    { chatId: ChatId
+      getId: int }
+
 type GetIdReqDto =
     { chatId: string
       getId: string }
 
-type GetMagneticLink = GetSession -> Request -> (Response -> Result<MagneticLink, BotError>) -> ChatId -> int -> JS.Promise<Result<MagneticLink, BotError>>
+let ofDto (dto: GetIdReqDto): Result<GetIdReq, BotError> =
+    let chatId = ChatId <| int dto.chatId
+    match parseInt dto.getId with
+    | Some id ->
+        Ok
+            { chatId = chatId
+              getId = id }
+    | None -> Error <| ValidationError "not an integer"
 
-type GetMagneticDto = GetSession -> Request -> (Response -> Result<MagneticLink, BotError>) -> GetIdReqDto -> JS.Promise<Result<MagneticLink, BotError>>
+type GetMagneticLink =
+    GetSession -> Request -> (Response -> Result<MagneticLink, BotError>) -> GetIdReq -> JS.Promise<Result<MagneticLink, BotError>>
 
-//todo: proper curring
+type GetMagneticDto =
+    GetSession -> Request -> (Response -> Result<MagneticLink, BotError>) -> GetIdReqDto -> JS.Promise<Result<MagneticLink, BotError>>
+
 let toGetMageticLink (func: GetMagneticLink): GetMagneticDto =
     fun getSession request parse dto ->
-        let chatId = ChatId <| int dto.chatId
-        let id = int dto.getId
-        func getSession request parse chatId id
+        match ofDto dto with
+        | Ok s -> func getSession request parse s
+        | Error e -> Promise.lift <| Error e
 
 
 //todo: logging
 let getMagneticLink: GetMagneticLink =
-    fun getSession request parse chatId getId ->
-        getSession chatId
-        |> Promise.map (fun session -> session.torrents.Find(fun e -> e.id = getId).url)
-        |> Promise.map (fun url ->
+    fun getSession request parseForMagneticLink req ->
+        getSession req.chatId
+        |> Promise.map (fun session ->
+            match session |> Option.bind (findTorrent req.getId) with
+            | Some e -> Ok e.url
+            | None -> Error <| NoSession)
+        |> PromiseResult.bindResult (fun url ->
             match (url) with
-            //todo: refactor address
-            | Some url -> Ok <| Url (sprintf "https://1337x.am/%s"  url)
-            | None -> Error <| ParseError "no url")
-        |> bindPromise request
-        |> bindResult parse
+            | Some url -> Ok <| Url.create url
+            | None -> Error <| ValidationError "no url")
+        |> PromiseResult.bindAsync request
+        |> PromiseResult.bindResult parseForMagneticLink

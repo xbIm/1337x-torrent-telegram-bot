@@ -1,4 +1,4 @@
-module App.Infrastructure.Logging
+module Infrastructure.Logging
 
 open Fable.Core
 open Common

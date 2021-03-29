@@ -21,6 +21,7 @@ let isShowMagnetic (uo: UserOptions option) =
 
 type UserOptionsSetter(f: ChatId -> string -> string -> JS.Promise<UserOptions>) =
     interface Setter<UserOptions> with
+        member this.Regex = "user[oO]ptions"
         member this.Name = "userOptions"
         member this.FriendlyName = "user options"
         member this.Titles = [| "showMagnetic" |]

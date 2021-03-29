@@ -1,6 +1,9 @@
-import {Document, Model, model, Schema} from 'mongoose';
-import {UserOptions} from './Entities';
+import { Document, Model, model, Schema } from 'mongoose';
 
+export interface UserOptions {
+    userId: number;
+    showMagnetic: boolean;
+}
 
 interface UserOptionsModel extends UserOptions, Document {
 }

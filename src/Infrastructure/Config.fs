@@ -1,4 +1,4 @@
-module App.Infrastructure.Config
+module Infrastructure.Config
 
 open Fable.Core
 open Fable.Import
@@ -20,7 +20,7 @@ let isProduction =
     | "production" -> true
     | _ -> false
 
-type LogConfig =
+type HostConfig =
     { host: string
       port: int
       logLevelConsole: string
@@ -29,7 +29,7 @@ type LogConfig =
 type MongoConfig =
     { uri: string }
 
-let loadLogConfig =
+let loadHostConfig =
     fun () ->
         { host = getEnvVarOrDeFault ("HOST", "")
           port = getEnvVarOrDeFault ("PORT", "3000") |> int

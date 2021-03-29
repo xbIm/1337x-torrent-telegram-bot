@@ -1,4 +1,4 @@
-module App.Infrastructure.Mongo.Common
+module Infrastructure.Mongo.Common
 
 open Fable.Core
 

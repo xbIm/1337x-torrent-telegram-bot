@@ -3,10 +3,7 @@
     "version": "1.0.0",
     "license": "MIT",
     "dependencies": {
-        "@types/cheerio": "^0.22.6",
-        "@types/express": "^4.16.0",
-        "@types/mongoose": "^5.0.15",
-        "@types/node-telegram-bot-api": "^0.30.1",
+        "@types/express": "^4.16.0",        
         "@types/request-promise": "^4.1.39",
         "babel-register": "^6.26.0",
         "body-parser": "^1.18.3",
@@ -14,31 +11,35 @@
         "cheerio": "^1.0.0-rc.2",
         "cls-hooked": "^4.2.2",
         "express": "^4.16.3",
+        "localtunnel": "^1.9.0",
         "mongoose": "^5.1.4",
-        "node-telegram-bot-api": "^0.30.0",
+        "node-telegram-bot-api": "^0.50.0",
         "promise-retry": "^1.1.1",
         "request": "^2.87.0",
         "ts-node": "^7.0.1",
-        "typescript": "^3.0.1",
-        "winston": "3.1.0"
+        "typescript": "^4.0.0",
+        "winston": "^3.2.1"
     },
     "scripts": {
         "build": "tsc -p src/js && fable-splitter src -o build --commonjs",
+        "start": "node build/Start.js",
         "dev": "node_modules/.bin/nodemon -e ts -w . start.js",
         "lint": "tslint -c tslint.json '**/*.ts'",
-        "test": "ava-ts ./test/tests/**/*.ts"
+        "test": "webpack --config test/webpack.test.config.js && mocha test/bin/bundle.js"
     },
     "devDependencies": {
         "@babel/core": "^7.5.5",
-        "ava": "^0.25.0",
-        "ava-ts": "^0.25.1",
+        "@babel/plugin-transform-modules-commonjs": "^7.12.1",
+        "ava": "^3.15.0",
         "fable-compiler": "^2.3.19",
         "fable-loader": "^2.1.8",
         "fable-splitter": "^2.1.10",
         "js-mock": "^1.0.2",
-        "localtunnel": "^1.9.0",
-        "ngrok": "^3.2.7",
-        "nodemon": "^1.17.5",
-        "tslint": "^5.12.1"
+        "mocha": "^7.1.1",
+        "ngrok": "^3.4.0",
+        "nodemon": "^2.0.7",
+        "tslint": "^5.12.1",
+        "webpack": "^4.42.0",
+        "webpack-cli": "^3.3.11"
     }
 }

@@ -1,4 +1,4 @@
-module App.Infrastructure.Request
+module Infrastructure.Request
 
 open Domain.Request
 open Fable.Core

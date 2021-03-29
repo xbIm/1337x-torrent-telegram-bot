@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Torrent1337Bot.fsproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Util.fs" />
+    <Compile Include="Parse.fs" />
+    <Compile Include="Validation.fs" />
+    <Compile Include="Main.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Fable.Core" Version="3.0.0" />
+    <DotNetCliToolReference Include="dotnet-fable" Version="2.0.11" />
+    <DotNetCliToolReference Include="dotnet-fable" Version="2.0.9" />
+  </ItemGroup>
+</Project>

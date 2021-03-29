@@ -5,6 +5,14 @@ open Fable.Core.JsInterop
 
 type ChatId = ChatId of int
 
+[<StringEnum>]
+[<RequireQualifiedAccess>]
+type ChatType =
+    | Private
+    | Group
+    | Supergroup
+    | Channel
+
 let unwrapChatId (ChatId a) = a
 
 type UserRequest = UserRequest of string
@@ -22,6 +30,7 @@ type ResponseText =
 
 type BotRequest =
     { chatId: ChatId
+      chatType: ChatType
       messageId: int
       userRequest: UserRequest
       secondArg: string option }
@@ -30,9 +39,11 @@ type BotResponse =
     { response: ResponseText }
 
 type BotError =
+    | NoSession
     | ValidationError of string
     | Text of string
     | ParseError of string
 
 
-type BotLogic = BotRequest -> JS.Promise<Result<BotResponse, BotError>>
+type BotLogic = BotRequest -> Result<BotResponse, BotError>
+type BotLogicAsync = BotRequest -> JS.Promise<Result<BotResponse, BotError>>

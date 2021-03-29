@@ -2,16 +2,11 @@ module TelegramBot
 
 open System
 open System.Text.RegularExpressions
+open Domain.Bot
 open Fable.Core
 open Fable.Core.JS
 
-[<StringEnum>]
-[<RequireQualifiedAccess>]
-type ChatType =
-    | Private
-    | Group
-    | Supergroup
-    | Channel
+
 
 [<StringEnum>]
 [<RequireQualifiedAccess>]
@@ -289,6 +284,8 @@ type TelegramBot =
     abstract sendMessage: chatId:U2<int, string> * text:string * ?options:SendMessageOptions -> Promise<Message>
     [<Emit "$0.on('callback_query',$1)">]
     abstract on_callback_query: listener:(CallbackQuery -> unit) -> unit
+     [<Emit "$0.on('edited_message',$1)">]
+    abstract on_callback_edited: listener:(CallbackQuery -> unit) -> unit
     abstract editMessageText: text:string * options:EditMessageTextOptions -> Promise<Message>
 
 

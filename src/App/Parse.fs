@@ -50,7 +50,6 @@ let parseTorrentTable: Parse =
         |> ignore
 
         let activeLi = r.Invoke(".pagination .active")
-
         let (prev: Option<string>, next: Option<string>) =
             if activeLi.length > float 0 then
                 (if activeLi.prev().length > float 0 then toOptStr <| activeLi.prev().children("a").prop("href")
@@ -67,7 +66,7 @@ let parseTorrentTable: Parse =
 
 let parseMagnetLink (response: Response) =
     let html = Cheerio.cheerio.load response.html
-    let link = toOptStr <| html.Invoke(".no-top-radius").find("a").prop("href")
+    let link = toOptStr <| html.Invoke(".no-top-radius").find("a").first().prop("href")
     match link with
     | Some link -> Result.Ok <| MagneticLink link
     | None -> Result.Error <| BotError.ParseError "magnetik link is empty"

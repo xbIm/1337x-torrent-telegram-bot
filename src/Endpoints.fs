@@ -7,12 +7,12 @@ open TelegramBot
 open Domain.Bot
 open Domain.MagneticLink
 open App.SearchOnSite
-open App.Infrastructure.Mongo.Session
+open Infrastructure.Mongo.Session
 open App.Parse
-open App.Infrastructure.Request
-open App.Infrastructure.Bot.bot
-open App.Infrastructure.Mongo.SearchArgs
-open App.Infrastructure.Mongo.UserOptions
+open Infrastructure.Request
+open Infrastructure.Bot.bot
+open Infrastructure.Mongo.SearchArgs
+open Infrastructure.Mongo.UserOptions
 open Infrastructure.Mongo.History
 open Common
 open Domain.SearchArgs
@@ -21,7 +21,9 @@ open ExpressTypes
 open Pagination
 
 let setBotEndpoints (bot: TelegramBot) (logger: Logger) (host: string) =
-    bindText bot logger
+    let search = SearchTorrentsImpl logger getSearchArgsImpl makeUrlImpl request addRecordImpl saveSession
+
+    addBotText bot logger
         (Regex("/start"), "start",
          String
              ("Hi, I\'m searching for torrents on 1337x.to, "
@@ -29,31 +31,31 @@ let setBotEndpoints (bot: TelegramBot) (logger: Logger) (host: string) =
 
     let helpText =
         "<b>What can I do?</b>\nTell me what do you need to find and I ll do it\n\nBrief list of commands:\n"
-        + "/start - the first command \n"
-        + "/help - brief information, which you are reading now\n"
-        + "/search - torrents search\n"
-        + "/searchArgs - set search arguments for torrents search\n"
-        + "/history - show 10 last requests \n"
-        + "/userOptions option - set user options for torrents search\nP.S. \n"
+        + "/start - the first command \n" + "/help - brief information, which you are reading now\n"
+        + "/search - torrents search\n" + "/searchArgs - set search arguments for torrents search\n"
+        + "/history - show 10 last requests \n" + "/userOptions option - set user options for torrents search\nP.S. \n"
         + "- This is not official bot of 1337x.to\n" + "- For question please contact @xbimz "
 
-    bindText bot logger (Regex("/help"), "help", HtmlString helpText)
-    bindText bot logger (Regex("cancel"), "cancel", RemoveKeyBoard "Cancel. Let\' start over")
-    bindReqRes bot logger (Regex("/history"), "showHistory", History.showHistory logger getHistoryImpl)
+    addBotText bot logger (Regex("/help"), "help", HtmlString helpText)
+    addBotText bot logger (Regex("cancel"), "cancel", RemoveKeyBoard "Cancel. Let\' start over")
+    addBotLogicAsync bot logger (Regex("/history"), "showHistory", History.showHistory logger getHistoryImpl)
 
-    bindReqRes bot logger
-        (Regex("\/get(.+)"), "onGet",
-         onGet logger host getUserOptionsImpl getSessionImpl (getMagneticLink getSessionImpl request parseMagnetLink))
+    addBotLogicAsync bot logger (Regex("/next"), "nextResult", History.next logger getHistoryImpl search)
+    addBotLogicAsync bot logger (Regex("/search (.+)"), "search", search)
 
-    bindSetter bot logger (SearchArgsSetter(updateSearchArgsImpl))
-    bindSetter bot logger (UserOptionsSetter(updateUserOptionsImpl))
+    addBotLogicAsync bot logger
+        (Regex("\/get([0-9]+)"), "onGet",
+         onGet logger host getUserOptionsImpl getSessionImpl
+             (getMagneticLink getSessionImpl request parseMagnetLink))
 
-    bindText bot logger (Regex("^\/.+"), "notfound", String "Command not found, try /help")
-    bindReqRes bot logger
-        (Regex("(.+)"), "search",
-         SearchTorrentsImpl logger getSearchArgsImpl makeUrlImpl request addRecordImpl saveSession)
+    addSetter bot logger (SearchArgsSetter(updateSearchArgsImpl))
+    addSetter bot logger (UserOptionsSetter(updateUserOptionsImpl))
+
+    addBotText bot logger (Regex("^\/.+"), "notfound", String "Command not found, try /help")
+    addBotLogicAsync bot logger (Regex("(.+)"), "search", search)
 
     bindCallbackQuery bot logger (Regex("(.+)"), "search", pagination logger request saveSession getSessionImpl)
+    bot.on_callback_edited (fun msg-> Fable.Core.JS.console.log msg)
 
 let redirectToLink (req: GetIdReqDto) =
     (toGetMageticLink getMagneticLink) getSessionImpl request parseMagnetLink req

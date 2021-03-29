@@ -50,22 +50,7 @@ export function createLogger(logLevel: string): ILogger {
             const profiler = logger.startTimer();
             return f(arg)
                 .then((r) => {
-                    const toBeLogged = {};
-                    if (arg != null) {
-                        for (let i in r) {
-                            if (!r.hasOwnProperty(i)) continue;
-
-                            if (typeof r[i] == "string") {
-                                if (r[i].length > 40) {
-                                    continue;
-                                }
-                            }
-                            toBeLogged[i] = r[i];
-                        }
-                    }
-
-
-                    profiler.done({message, ...toBeLogged, ...meta});
+                    profiler.done({message, ...meta});
                     return r;
                 })
         }

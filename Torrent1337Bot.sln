@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Torrent1337Bot", "src\Torrent1337Bot.fsproj", "{9FBA5E5F-F47E-4BCE-8478-E5CE10495FCE}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Torrent1337Bot.Tests", "test\Torrent1337Bot.Tests\Torrent1337Bot.Tests.fsproj", "{88EE323B-5747-45A7-AB2E-9CAEFF0A7B3B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9FBA5E5F-F47E-4BCE-8478-E5CE10495FCE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9FBA5E5F-F47E-4BCE-8478-E5CE10495FCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9FBA5E5F-F47E-4BCE-8478-E5CE10495FCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9FBA5E5F-F47E-4BCE-8478-E5CE10495FCE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88EE323B-5747-45A7-AB2E-9CAEFF0A7B3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88EE323B-5747-45A7-AB2E-9CAEFF0A7B3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88EE323B-5747-45A7-AB2E-9CAEFF0A7B3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88EE323B-5747-45A7-AB2E-9CAEFF0A7B3B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

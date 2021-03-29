@@ -9,7 +9,7 @@ open App.SearchOnSite
 let private addRecord (int) (string): JS.Promise<History> = jsNative
 
 [<Import("getHistory", "../../js/history.js")>]
-let private getHistory (int): JS.Promise<History> = jsNative
+let private getHistory (int): JS.Promise<Option<History>> = jsNative
 
 let getHistoryImpl (chatId: ChatId) =
     getHistory <| unwrapChatId chatId

@@ -1,4 +1,4 @@
-module App.Infrastructure.Mongo.SearchArgs
+module Infrastructure.Mongo.SearchArgs
 
 open Domain.SearchArgs
 open Domain.Bot

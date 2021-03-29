@@ -2,7 +2,11 @@ node_modules
 *.log
 .idea/
 build/
+bin/
 .ionide/
 src/js/*.js
 src/obj/
 
+test/Torrent1337Bot.Tests/obj/
+
+.fake

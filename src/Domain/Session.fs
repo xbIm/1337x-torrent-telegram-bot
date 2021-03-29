@@ -22,16 +22,23 @@ let toSession (parseResult: ParseResult) (chatId: ChatId) (messageId: int): Sess
 
 type SaveSession = Session -> JS.Promise<Session>
 
-type GetSession = ChatId -> JS.Promise<Session>
+type GetSession = ChatId -> JS.Promise<Option<Session>>
 
-type UserInput = {
-    text: string
-    date: JS.Date
-}
-type History = {
-    userId: int
-    records: UserInput array
-}
+type UserInput =
+    { text: string
+      date: JS.Date }
 
-type GetHistory = ChatId -> JS.Promise<History>
+type History =
+    { userId: int
+      records: UserInput array }
 
+type GetHistory = ChatId -> JS.Promise<Option<History>>
+
+let sessionOptionMap =
+    fun session ->
+        match (session) with
+        | Some session -> Ok session
+        | None -> Error NoSession
+
+let findTorrent getId =
+    fun session -> Array.tryFind (fun (e: Parse.TorrentTableEntity) -> e.id = getId) (session.torrents.ToArray())

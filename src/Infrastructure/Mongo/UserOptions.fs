@@ -1,4 +1,4 @@
-module App.Infrastructure.Mongo.UserOptions
+module Infrastructure.Mongo.UserOptions
 
 open App.Domain.UserOptions
 open Domain.SearchArgs

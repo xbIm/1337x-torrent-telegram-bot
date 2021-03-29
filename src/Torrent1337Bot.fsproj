@@ -1,0 +1,53 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>netstandard2.1</TargetFramework>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    </PropertyGroup>
+    <ItemGroup>
+        <DotNetCliToolReference Include="dotnet-fable" Version="2.0.9" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Domain/Common.fs" />
+        <Compile Include="Domain/Bot.fs" />
+        <Compile Include="Domain/Parse.fs" />
+        <Compile Include="Domain/Request.fs" />
+
+        <Compile Include="Domain/Session.fs" />
+        <Compile Include="Domain/SearchArgs.fs" />
+        <Compile Include="Domain\UserOptions.fs" />
+        <Compile Include="Domain\MagneticLink.fs" />
+
+        <Compile Include="App/Cherrio.fs" />
+        <Compile Include="App/Parse.fs" />
+        <Compile Include="App\SearchOnSite.fs" />
+        <Compile Include="App\Pagination.fs" />
+        <Compile Include="App\History.fs" />
+        <Compile Include="Infrastructure/Config.fs" />
+        <Compile Include="Infrastructure/Logging.fs" />
+        <Compile Include="Infrastructure/Request.fs" />
+
+        <Compile Include="Infrastructure/Mongo/Common.fs" />
+        <Compile Include="Infrastructure/Mongo/SearchArgs.fs" />
+        <Compile Include="Infrastructure\Mongo\UserOptions.fs" />
+        <Compile Include="Infrastructure\Mongo\Session.fs" />
+        <Compile Include="Infrastructure\Mongo\History.fs" />
+
+        <Compile Include="Infrastructure/bot/TelegramBot.fs" />
+        <Compile Include="Infrastructure/bot/bot.fs" />
+
+        <Compile Include="Infrastructure/express/ExpressTypes.fs" />
+        <Compile Include="Infrastructure/express/Express.fs" />
+        <Compile Include="Endpoints.fs" />
+
+        <Compile Include="Start.fs" />
+        <Content Include="js/**/*.ts" />
+        <Content Include="js/**/*.json" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Fable.Core" Version="3.0.0" />
+        <PackageReference Include="Fable.Node" Version="1.0.1" />
+        <PackageReference Include="Fable.Promise" Version="2.0.0" />
+        <PackageReference Include="Fable.Fetch" Version="2.0.0" />
+        <PackageReference Include="Fable.Promise" Version="2.0.0" />
+    </ItemGroup>
+</Project>

@@ -14,7 +14,7 @@ export function wrapTrace(logger: ILogger, funcName: string, message: TelegramBo
     setTrace(() => {
         if ((message).text.length < 100) {
             logger.LogInfo(`${funcName} has called with chatId:${message.chat.id} and name:${message.from.username} and text:${(message).text}`,
-                {funcName, chatId: message.chat.id});
+                {funcName, chatId: message.chat.id,text: message.text});
         }
         logger.LogInfoDuration("answered", {funcName}, func, null);
     })

@@ -1,8 +1,8 @@
 module Domain.Request
 
 open Fable.Core
-open Common
 
+//add multi domain
 type Url = Url of string
 
 let unwrapUrl (Url a) = a
@@ -13,3 +13,13 @@ type Response =
       ``try``: int }
 
 type Request = Url -> JS.Promise<Response>
+
+module Url =
+  let create (s: string) =
+       Url <|
+       if s.StartsWith "/" then
+         s
+       else
+         sprintf "/%s" s
+
+

@@ -10,7 +10,7 @@
         "bottlejs": "^1.7.1",
         "cheerio": "^1.0.0-rc.2",
         "cls-hooked": "^4.2.2",
-        "express": "^4.16.3",
+        "express": "^4.17.3",
         "localtunnel": "^1.9.0",
         "mongoose": "^5.1.4",
         "node-telegram-bot-api": "^0.50.0",
